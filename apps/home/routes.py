@@ -1,8 +1,11 @@
 from email import message
+from urllib import response
 from apps.home import blueprint
-from flask import render_template, request, redirect, flash
+from flask import render_template, request, redirect, flash, Response
 from werkzeug.utils import secure_filename
 from jinja2 import TemplateNotFound
+import os
+from apps.home.extractTrxData import extractData
 
 
 def allowed_file(filename):
@@ -15,6 +18,7 @@ def handleFile(request):
                 return "Please select a file", 400
             
             files = request.files.getlist('files[]')
+            bankname = request.form.get('selectedBank')
 
             fileList = []
             for file in files:                
@@ -22,10 +26,16 @@ def handleFile(request):
                     return "Please provide a proper file", 422
 
                 if file and allowed_file(file.filename):
-                    fileList.append(secure_filename(file.filename))
+                    fileList.append([secure_filename(file.filename), file])
                 else:                
                     return "Extension Not Supported", 422
-            return fileList, 200
+            response = extractData(fileList, bankname)
+            return fileList, 200, response
+            # return Response(
+            #     response=fileList,
+            #     status=200,
+            #     headers=response1
+            # )
     return
 
 @blueprint.route('/')
@@ -38,9 +48,7 @@ def index():
 def route_template(template):
 
     try:
-        print(request.method)
         
-
         if not template.endswith('.html'):
             template += '.html'
 

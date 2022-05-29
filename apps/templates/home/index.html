@@ -21,8 +21,19 @@
       <form action="http://127.0.0.1:5000/index.html" method = "POST" 
          enctype = "multipart/form-data">          
           <label for="files" class="btn btn-outline-primary btn-md mb-0">No files read yet!! Read Now? Click Me</label>              
-          <input type="file" name="files[]" id='files' multiple="true" style="visibility: hidden;" onchange="form.submit()"/>                 
-      </form>       
+          <input type="file" name="files[]" id='files' />                 
+          <fieldset>
+            <label for="selectedBank" class="ms-1 font-weight-bold">Select Bank:</label>
+            <select name="selectedBank" id="selectedBank">
+              <option value="none" class="select" selected disabled hidden>Select an Option</option>
+              <option value="sbi" class="btn btn-outline-primary btn-md mb-0" data-class="podcast">State Bank of India</option>
+              <option value="kotak" class="btn btn-outline-primary btn-md mb-0" data-class="video">Kotak Bank</option>
+              <option value="hdfc" class="btn btn-outline-primary btn-md mb-0" data-class="rss">HDFC Bank</option>
+              <option value="axis" class="btn btn-outline-primary btn-md mb-0" data-class="rss">Axis Bank</option>
+            </select>
+          </fieldset>
+          <button onclick=form.submit()>Send</button>
+      </form>
     </div>
   </div>
   {% else %}
@@ -34,16 +45,15 @@
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Money</p>
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Amount</p>
                   <h5 class="font-weight-bolder mb-0">
-                    $53,000
-                    <span class="text-success text-sm font-weight-bolder">+55%</span>
+                    {{ message[2]["Total Amount"] }}
                   </h5>
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+                  <i class="fa fa-inr text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -56,16 +66,16 @@
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Users</p>
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Debit</p>
                   <h5 class="font-weight-bolder mb-0">
-                    2,300
+                    {{ message[2]["Total Debit"] }}
                     <span class="text-success text-sm font-weight-bolder">+3%</span>
                   </h5>
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                  <i class="fa fa-credit-card text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -78,38 +88,16 @@
             <div class="row">
               <div class="col-8">
                 <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">New Clients</p>
+                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Credit</p>
                   <h5 class="font-weight-bolder mb-0">
-                    +3,462
+                    {{ message[2]["Total Credit"] }}
                     <span class="text-danger text-sm font-weight-bolder">-2%</span>
                   </h5>
                 </div>
               </div>
               <div class="col-4 text-end">
                 <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-3 col-sm-6">
-        <div class="card">
-          <div class="card-body p-3">
-            <div class="row">
-              <div class="col-8">
-                <div class="numbers">
-                  <p class="text-sm mb-0 text-capitalize font-weight-bold">Sales</p>
-                  <h5 class="font-weight-bolder mb-0">
-                    $103,430
-                    <span class="text-success text-sm font-weight-bolder">+5%</span>
-                  </h5>
-                </div>
-              </div>
-              <div class="col-4 text-end">
-                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                  <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
+                  <i class="fa fa-credit-card text-lg opacity-10" aria-hidden="true"></i>
                 </div>
               </div>
             </div>
@@ -118,50 +106,22 @@
       </div>
     </div>
     <div class="row mt-4">
-      <div class="col-lg-7 mb-lg-0 mb-4">
-        <div class="card">
+      <div class="col-lg-7">
+        <div class="card z-index-2">
+          <div class="card-header pb-0">
+            <h6>Sales overview</h6>
+            <p class="text-sm">
+              <i class="fa fa-arrow-up text-success"></i>
+              <span class="font-weight-bold">4% more</span> in 2021
+            </p>
+          </div>
           <div class="card-body p-3">
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="d-flex flex-column h-100">
-                  <p class="mb-1 pt-2 text-bold">Built by developers</p>
-                  <h5 class="font-weight-bolder">Soft UI Dashboard</h5>
-                  <p class="mb-5">From colors, cards, typography to complex elements, you will find the full documentation.</p>
-                  <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-                    Read More
-                    <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-                  </a>
-                </div>
-              </div>
-              <div class="col-lg-5 ms-auto text-center mt-5 mt-lg-0">
-                <div class="bg-gradient-primary border-radius-lg h-100">
-                  <img src="/static/assets/img/shapes/waves-white.svg" class="position-absolute h-100 w-50 top-0 d-lg-block d-none" alt="waves">
-                  <div class="position-relative d-flex align-items-center justify-content-center h-100">
-                    <img class="w-100 position-relative z-index-2 pt-4" src="/static/assets/img/illustrations/rocket-white.png" alt="rocket">
-                  </div>
-                </div>
-              </div>
+            <div class="chart">
+              <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-lg-5">
-        <div class="card h-100 p-3">
-          <div class="overflow-hidden position-relative border-radius-lg bg-cover h-100" style="background-image: url('/static/assets/img/ivancik.jpg');">
-            <span class="mask bg-gradient-dark"></span>
-            <div class="card-body position-relative z-index-1 d-flex flex-column h-100 p-3">
-              <h5 class="text-white font-weight-bolder mb-4 pt-2">Work with the rockets</h5>
-              <p class="text-white">Wealth creation is an evolutionarily recent positive-sum game. It is all about who take the opportunity first.</p>
-              <a class="text-white text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-                Read More
-                <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row mt-4">
       <div class="col-lg-5 mb-lg-0 mb-4">
         <div class="card z-index-2">
           <div class="card-body p-3">
@@ -274,22 +234,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-7">
-        <div class="card z-index-2">
-          <div class="card-header pb-0">
-            <h6>Sales overview</h6>
-            <p class="text-sm">
-              <i class="fa fa-arrow-up text-success"></i>
-              <span class="font-weight-bold">4% more</span> in 2021
-            </p>
-          </div>
-          <div class="card-body p-3">
-            <div class="chart">
-              <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
             </div>
           </div>
         </div>
@@ -652,19 +596,19 @@
 
   <script>
     var ctx = document.getElementById("chart-bars").getContext("2d");
-
+    
     new Chart(ctx, {
       type: "bar",
       data: {
-        labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        labels: ["Jan 2021", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         datasets: [{
-          label: "Sales",
+          label: "Balance",
           tension: 0.4,
           borderWidth: 0,
           borderRadius: 4,
           borderSkipped: false,
           backgroundColor: "#fff",
-          data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
+          data: [100, 150, 170, 450, 200, 100, 220, 500, 100, 400, 230, 500],
           maxBarThickness: 6
         }, ],
       },
