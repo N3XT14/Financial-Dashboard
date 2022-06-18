@@ -4,7 +4,7 @@ services:
     container_name: financial_dashboard
     restart: always
     env_file: .env
-    build: .    
+    build: .
   nginx:
     container_name: nginx
     restart: always

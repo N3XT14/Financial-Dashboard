@@ -1,5 +1,3 @@
-from cProfile import label
-import enum
 import camelot
 import re
 from pathlib import Path
@@ -7,6 +5,8 @@ from datetime import date, datetime as dt
 from itertools import groupby
 import pandas as pd
 import json
+import sys
+import traceback
 
 f = open ('apps/static/assets/json/banks.json', "r")
 bankStructure = json.loads(f.read())
@@ -173,9 +173,26 @@ def extractData(fileList, bankName):
         filename = Path.home() / file[0]
         filename = str(filename).replace("\\","/")
         
-        # tables2=camelot.read_pdf("D:/ME/Projects/Python/BankStatement.pdf", flavor=bankStructure[bankName]["type"], pages='all')
-        tables2=camelot.read_pdf(filename, flavor=bankStructure[bankName]["type"], pages='all')
-        #print(tables2)
+        try :
+            tables2=camelot.read_pdf(filename, flavor=bankStructure[bankName]["type"], pages='all')
+        except BaseException as ex:
+            # Get current system exception
+            print('Entered except')
+            ex_type, ex_value, ex_traceback = sys.exc_info()
+
+            # Extract unformatter stack traces as tuples
+            trace_back = traceback.extract_tb(ex_traceback)
+
+            # Format stacktrace
+            stack_trace = list()
+
+            for trace in trace_back:
+                stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+
+            print("Exception type : %s " % ex_type.__name__)
+            print("Exception message : %s" %ex_value)
+            print("Stack trace : %s" %stack_trace)
+        print(tables2)
         dateMap = {
             "Total_Amount": 0,
             "Total Transaction": 0,
@@ -197,29 +214,3 @@ def extractData(fileList, bankName):
         resObj = createResponseObj(dateMap)
         
     return resObj
-# extractData(['BankStatement.pdf'], 'kotak')
-# filename = Path("D:/ME/Projects/Python/BankStatement.pdf").absolute()
-# print(filename)
-# filename = str(filename).replace("\\","/")
-# tables2=camelot.read_pdf("../../BankStatement.pdf", flavor='stream', pages='1')
-# tables2=camelot.read_pdf("D:/ME/Projects/Python/BankStatement.pdf", flavor='stream', pages='1')
-# tables2=camelot.read_pdf(filename, flavor='stream', pages='1')
-# tables1=camelot.read_pdf(
-#     '../foo.pdf',
-#     password=None,
-#     flavor='lattice',
-#     suppress_stdout=False,
-#     layout_kwargs={}    
-# )
-# print(tables2[1].df)
-# print(type(tables2[0]))
-# print(tables2[1].df.head(2).to_dict())
-# print(tables2[1].df.iloc[:2].to_dict())
-# # for table in tables1:
-# #     #print(table.parsing_report)
-# #     reportObj = table.parsing_report
-# #     #print(reportObj['whitespace'])
-# #     if reportObj and reportObj["whitespace"] < 50:
-# #         print(table.df.iloc[1].to_list())
-# print(tables1[0])
-# print(tables1[0].parsing_report)

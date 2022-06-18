@@ -27,7 +27,7 @@ def handleFile(request):
                 if file and allowed_file(file.filename):
                     fileList.append([secure_filename(file.filename), file])
                 else:                
-                    return "Extension Not Supported", 422
+                    return "Extension Not Supported", 422            
             response = extractData(fileList, bankname)
             return fileList, 200, response            
     return
@@ -42,7 +42,7 @@ def index():
 def route_template(template):
 
     try:
-        
+         
         if not template.endswith('.html'):
             template += '.html'
 
@@ -50,14 +50,12 @@ def route_template(template):
         if segment.endswith('.html'):
             pagename = segment.replace('.html','')
             pagename = 'Dashboard' if pagename == 'index' else pagename.capitalize()            
-            print(pagename)
 
         global message
                 
         if message == {} or message is None or request.method == 'POST':            
-            message = handleFile(request)
-        
-        print('Url',message)
+            message = handleFile(request) 
+
         return render_template("home/" + template, segment=segment, pagename=pagename, message=message)
 
     except TemplateNotFound:
