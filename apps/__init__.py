@@ -5,7 +5,8 @@ def register_blueprints(app):
     module = import_module('apps.{}.routes'.format('home'))
     app.register_blueprint(module.blueprint)
 
-def create_app():
-    app = Flask(__name__)    
+def create_app(config):
+    app = Flask(__name__) 
+    app.config.from_object(config) 
     register_blueprints(app)   
     return app

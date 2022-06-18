@@ -1,0 +1,26 @@
+{
+    "kotak" : {
+        "type": "stream",
+        "dateFormat": "%d-%m-%Y",
+        "headerMap": {
+            "Date": [],
+            "Narration": [],
+            "Debit": [],
+            "Credit": [],
+            "Balance": []
+        }
+    },
+    "sbi" : {
+        "type": "lattice",
+        "dateFormat": "%d %b %Y",
+        "headerMap": {
+            "Date": [],
+            "Description": [],
+            "Debit": [],
+            "Credit": [],
+            "Balance": []
+        }
+    },
+    "hdfc" : {},
+    "axis" : {}
+}

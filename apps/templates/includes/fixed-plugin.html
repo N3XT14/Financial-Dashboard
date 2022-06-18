@@ -1,0 +1,63 @@
+  <div class="fixed-plugin">
+    <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+      <i class="fa fa-cog py-2"> </i>
+    </a>
+    <div class="card shadow-lg ">
+      <div class="card-header pb-0 pt-3 ">
+        <div class="float-start">
+          <h5 class="mt-3 mb-0">My Accountant</h5>          
+        </div>
+        <div class="float-end mt-4">
+          <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+            <i class="fa fa-close"></i>
+          </button>
+        </div>
+        <!-- End Toggle Button -->
+      </div>
+      <hr class="horizontal dark my-1">
+      <p>Want to visualize your spendings with another statement.<br /> Load it now!!</p>
+      <div class="card-body pt-sm-3 pt-0">
+        <form action="http://127.0.0.1:5000/index.html" method = "POST" 
+         enctype = "multipart/form-data">          
+          <label for="files" class="btn btn-outline-primary btn-md mb-0">No files read yet!! Read Now? Click Me</label>              
+          <input type="file" name="files[]" id='files' hidden />
+          <fieldset>
+            <br />
+            <label for="selectedBank" class=" font-weight-bold text-primary">Select Bank:</label>
+            <select name="selectedBank" id="selectedBank" class="text-primary border-radius-md btn-outline-primary">
+              <option value="none" class="btn-outline-primary text-sm" selected disabled hidden>Select an Option</option>
+              <option value="sbi" class="btn btn-outline-primary btn-md mb-0" data-class="podcast">State Bank of India</option>
+              <option value="kotak" class="btn btn-outline-primary btn-md mb-0" data-class="video">Kotak Bank</option>
+              <option value="hdfc" class="btn btn-outline-primary btn-md mb-0" data-class="rss">HDFC Bank</option>
+              <option value="axis" class="btn btn-outline-primary btn-md mb-0" data-class="rss">Axis Bank</option>
+            </select>
+          </fieldset>
+          <hr class="horizontal dark my-sm-4">
+          <button class="btn bg-gradient-dark w-100" onclick=form.submit()>Send</button>
+      </form>       
+        <div class="w-100 text-center">
+          <h6 class="mt-3">Thank you for sharing!</h6>
+          <a href="https://twitter.com/intent/tweet?text=Check%20Soft%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/soft-ui-dashboard" class="btn btn-dark mb-0 me-2" target="_blank">
+            <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+
+<script>
+  document.getElementById("files")
+  .addEventListener("change", function(e) {
+    document.querySelector("[for=" + e.target.id + "]")
+    .innerHTML = e.target.files[0].name;
+  })
+  
+</script>
+
+{% endblock javascripts %}

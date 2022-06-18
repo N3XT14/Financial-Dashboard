@@ -1,13 +1,12 @@
-from email import message
 from urllib import response
 from apps.home import blueprint
-from flask import render_template, request, redirect, flash, Response
+from flask import render_template, request, redirect, flash, Response, json
 from werkzeug.utils import secure_filename
 from jinja2 import TemplateNotFound
 import os
 from apps.home.extractTrxData import extractData
 
-
+message = {}
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ['pdf']
@@ -30,18 +29,13 @@ def handleFile(request):
                 else:                
                     return "Extension Not Supported", 422
             response = extractData(fileList, bankname)
-            return fileList, 200, response
-            # return Response(
-            #     response=fileList,
-            #     status=200,
-            #     headers=response1
-            # )
+            return fileList, 200, response            
     return
 
 @blueprint.route('/')
 def index():
 
-    return render_template('home/index.html', segment='index', pagename='Dashboard', message='')
+    return render_template('home/index.html', segment='index', pagename='Dashboard', message=[[],0,{}])
 
 
 @blueprint.route('/<template>',methods=['GET','POST'])
@@ -57,8 +51,12 @@ def route_template(template):
             pagename = segment.replace('.html','')
             pagename = 'Dashboard' if pagename == 'index' else pagename.capitalize()            
             print(pagename)
+
+        global message
+                
+        if message == {} or message is None or request.method == 'POST':            
+            message = handleFile(request)
         
-        message = handleFile(request)
         print('Url',message)
         return render_template("home/" + template, segment=segment, pagename=pagename, message=message)
 

@@ -1,3 +1,5 @@
+from cProfile import label
+import enum
 import camelot
 import re
 from pathlib import Path
@@ -12,29 +14,63 @@ bankStructure = json.loads(f.read())
 # re_num = '\d*[\,\d*].?\d+'
 re_num = '^\d\d*[,]?\d*[,]?\d*[.,]?\d*\d+'
 
-def convert(s, dformat):    
+def convert(s, dformat):
     return dt.strptime(s, dformat)
 
-def kotakSpecial(l1, headerMap):    
-    length = len(l1[2:])
+def sortRevByAmount(newL, index, top):    
+    return sorted(newL, key = lambda newL:newL[index], reverse=True)[:top]
+
+def calcPercentage(l, index, total, updateOriginal, roundUp):
+    newL = []
+    
+    for itr, ele in enumerate(l):
+        print(ele[index], total)     
+        val = (ele[index]/total)*100
+        newL.append(round(val))
+        if updateOriginal:
+            ele.append(round(val))
+    return newL
+
+def validateIfEmpty(record, cnt):  
+    if record == [] or record == '':
+        return float(0), cnt
+    else:
+        record = float(record[0].replace(',',''))
+        return  record, cnt + 1 if record > 0 else cnt
+
+def kotakSpecial(l1, headerMap):     
+    length = len(l1)
     debit = ["0.00(Dr)"]*length
     credit = ["0.00(Cr)"]*length
-    i,start = 2,0
+    i = 0
     while(i != length):        
         if l1[i].endswith("Dr)"):
-            debit[start] = l1[i]
+            debit[i] = l1[i]
         else:
-            credit[start] = l1[i]
+            credit[i] = l1[i]
         i+=1
-        start+=1
     headerMap['Debit'] = debit
-    headerMap['Credit'] = credit    
+    headerMap['Credit'] = credit
 
+    return
+
+def kotakSpecialDesc(l1, headerMap):
+    description = []
+    length,i = len(l1),0
+    
+    for i in range(0,length,2):
+        if i+1 < length:
+            description.append(l1[i] + l1[i+1])
+    # while(i != length):
+    #     i+=1    
+    headerMap["Description"] = description
+
+    return
 
 def createDataStores(data, bankName):
     headerMap = {}
     for index, ele in enumerate(data):
-        if bankName == 'kotak':
+        if bankName == 'kotak' and data[index][0] != 'Narration':
             col_list = list(filter(None, data[index]))
         else:
             col_list = list(data[index])        
@@ -48,72 +84,118 @@ def createDataStores(data, bankName):
         # if col_list[0] in ['Credit', 'Deposit']:
         #     col_list[0] = 'Credit'
         
-        if col_list[0] == 'Withdrawal (Dr)/':
-            kotakSpecial(col_list, headerMap)
-        elif col_list[0] not in headerMap:
-            headerMap[col_list[0]] = col_list[1:]
+        if col_list[0] == 'Withdrawal (Dr)/' and bankName == 'kotak':
+            kotakSpecial(col_list[2:], headerMap)
+        elif col_list[0] == 'Narration' and bankName == 'kotak':
+            kotakSpecialDesc(col_list[1:], headerMap)                
+        elif col_list[0] not in headerMap:            
+            headerMap[col_list[0]] = list(map(lambda st: str.replace(st, "\n", " "), col_list[1:]))            
         else:
             headerMap[col_list[0]].extend(col_list[1:])
-    
+    # print(headerMap)
     return headerMap
 
-dateMap = {
-    "Total_Amount": 0,
-    "Total_Debit": 0,
-    "Total_Credit": 0
-}
-def mapDateWithDataStore(headerMap, bankName):
+def mapDateWithDataStore(dateMap, headerMap, bankName):
     format = [bankStructure[bankName]["dateFormat"]]*len(headerMap["Date"])
     dateList = list(map(convert, headerMap["Date"], format))    
-    balance = headerMap['Balance']
-    debit = headerMap['Debit']
-    credit = headerMap['Credit']
-    for index,i in enumerate(dateList):        
-        k = str(i.month) + " " + str(i.year)
-        bal = float(re.findall(re_num, balance[index])[0].replace(',',''))
-        creditVal = float(re.findall(re_num, credit[index])[0].replace(',',''))
-        debitVal = float(re.findall(re_num, debit[index])[0].replace(',',''))
+    balance = headerMap["Balance"]
+    debit = headerMap["Debit"]
+    credit = headerMap["Credit"]
+    desc = headerMap["Description"]
+    creditCount, debitCount, totalTrx,j = 0, 0, 0,-1
+    
+    if len(desc) > len(dateList):
+        desc = desc[1:]
+    
+    for index,i in enumerate(dateList):
+        k = i.strftime("%b") + " " + str(i.year)
+        bal, totalTrx = validateIfEmpty(re.findall(re_num, balance[index]), totalTrx)
+        creditVal, creditCount = validateIfEmpty(re.findall(re_num, credit[index]), creditCount)
+        debitVal, debitCount = validateIfEmpty(re.findall(re_num, debit[index]), debitCount)
+        # print(f'Balance: {bal}, {creditCount}, CreditVal: {creditVal}, DebitVal: {debitVal}')
         if k not in dateMap:
+            dateMap["Labels"][0].append(k)            
             dateMap[k] = {}            
-            dateMap[k]['Debit'] = [debitVal]
-            dateMap[k]['Credit'] = [creditVal]
+            dateMap[k]["Debit"] = [debitVal]
+            dateMap[k]["Credit"] = [creditVal]
+            dateMap[k]["Debit_Sum"] = debitVal
+            dateMap[k]["Credit_Sum"] = creditVal
+            dateMap["Labels"][1].append(debitVal)
+            dateMap["Labels"][2].append(creditVal)
+            dateMap["Labels"][3].append(bal)
+            j+=1
         else:
-            dateMap[k]['Debit'].append(debitVal)
-            dateMap[k]['Credit'].append(creditVal)
-        dateMap[k]['Balance'] = bal
-        dateMap['Total_Credit'] += creditVal
-        dateMap['Total_Debit'] += debitVal
-    dateMap['Total_Amount'] = bal
+            dateMap[k]["Debit"].append(debitVal)
+            dateMap[k]["Credit"].append(creditVal)
+            dateMap[k]["Debit_Sum"] += debitVal
+            dateMap[k]["Credit_Sum"] += creditVal
+            dateMap["Labels"][1][j] += debitVal
+            dateMap["Labels"][2][j] += creditVal
+            dateMap["Labels"][3][j] = bal
+        
+        if debitVal != 0:            
+            dateMap["Debit Trx List"].append([desc[index], str(i.day) + " " + k, debitVal])
+        if creditVal != 0:
+            dateMap["Credit Trx List"].append([desc[index], str(i.day) + " " + k, creditVal])
+        dateMap[k]["Balance"] = bal
+        dateMap["Total_Credit"] += creditVal
+        dateMap["Total_Debit"] += debitVal
+    # print(creditCount, debitCount)
+    dateMap["Total_Amount"] = bal
+    dateMap["Credit Count"] +=  creditCount
+    dateMap["Debit Count"] += debitCount
+    dateMap["Total Transaction"] += totalTrx
 
-    return
+    return dateMap
 
-def createResponseObj(result):    
+def createResponseObj(result):
+    calcPercentage(result["Debit Trx List"], 2, result["Total_Debit"], True, 0)
+    calcPercentage(result["Credit Trx List"], 2, result["Total_Credit"], True, 0)
+
     resObj = {
-        'Total Amount': dateMap['Total_Amount'],
-        'Total Debit': dateMap['Total_Debit'],
-        'Total Credit': dateMap['Total_Credit']
-    }
-    print(resObj)
+        "Total Amount": result["Total_Amount"],
+        "Total Transaction": result["Total Transaction"],
+        "Total Credit": result["Total_Credit"],
+        "Credit Count": result["Credit Count"],
+        "Total Debit": result["Total_Debit"],
+        "Debit Count": result["Debit Count"],
+        "Date Response": result["Labels"],
+        "Debit Trx List": sortRevByAmount(result["Debit Trx List"], 2, 10),
+        "Credit Trx List": sortRevByAmount(result["Credit Trx List"], 2, 10)
+    }    
+    print("Result", resObj)
     return resObj
 
 
 def extractData(fileList, bankName):
     for file in fileList:
-        # file[1].save(Path.home() / file[0])        
-        # filename = Path.home() / file[0]        
-        # filename = str(filename).replace("\\","/")
+        file[1].save(Path.home() / file[0])
+        filename = Path.home() / file[0]
+        filename = str(filename).replace("\\","/")
         
-        tables2=camelot.read_pdf("D:/ME/Projects/Python/BankStatement.pdf", flavor=bankStructure[bankName]["type"], pages='all')
+        # tables2=camelot.read_pdf("D:/ME/Projects/Python/BankStatement.pdf", flavor=bankStructure[bankName]["type"], pages='all')
+        tables2=camelot.read_pdf(filename, flavor=bankStructure[bankName]["type"], pages='all')
         #print(tables2)
+        dateMap = {
+            "Total_Amount": 0,
+            "Total Transaction": 0,
+            "Total_Credit": 0,
+            "Credit Count": 0,
+            "Total_Debit": 0,
+            "Debit Count": 0,
+            "Labels": [[] for i in range(4)],
+            "Debit Trx List": [],
+            "Credit Trx List": []
+        }        
         for table in tables2:
             reportObj = table.parsing_report
             if reportObj and reportObj["whitespace"] < 50:         
                 df_data = table.df
-                #print(df_data)
+                # print(df_data)               
                 headerMap = createDataStores(df_data, bankName)
-                mapDateWithDataStore(headerMap, bankName)
+                dateMap = mapDateWithDataStore(dateMap, headerMap, bankName)
         resObj = createResponseObj(dateMap)
-        # print(dateMap)
+        
     return resObj
 # extractData(['BankStatement.pdf'], 'kotak')
 # filename = Path("D:/ME/Projects/Python/BankStatement.pdf").absolute()

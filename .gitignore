@@ -130,8 +130,7 @@ dmypy.json
 
 
 # Python incomplete files
-apps/static
-apps/templates/page-403.html
-apps/templates/page-403.html
-apps/templates/page-500.html
-apps/templates/includes/fixed-plugin.html
+apps/static/assets/gulpfile.js
+apps/home/try.py
+.dockerignore
+gunicorn.sh

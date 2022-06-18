@@ -4,7 +4,6 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="/static/assets/img/apple-icon.png">
   <link rel="shortcut icon" type="image/x-icon" href="static/assets/favicon.ico">
 
   <title>
@@ -22,18 +21,18 @@
   {% block stylesheets %}{% endblock stylesheets %}
 
 </head>
-<body class="g-sidenav-show  bg-gray-100">
+<body class="g-sidenav-show  bg-dark">
 
   {% include "includes/sidebar.html" %}
 
-  <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
+  <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg " id="main-content">
     
     {% include "includes/navigation.html" %}
 
     {% block content %}{% endblock content %}
 
   </main>
-    
+  
   {% include "includes/scripts.html" %}
   
   <!-- Specific JavaScript goes HERE -->
@@ -47,13 +46,32 @@
       }
       Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
+    var mini = true;
+    function toggleSidebar() {
+      if (window.innerWidth > 1200) {
+        if (mini) {         
+          document.getElementById('sidenav-main').style.width = '250px';
+          document.getElementById('main-content').style.marginLeft = '250px';
+          this.mini = false;
+        } else {
+          document.getElementById('sidenav-main').style.width = '65px';
+          document.getElementById('main-content').style.marginLeft = '100px';
+          this.mini = true;
+        }
+      }
+      else {
+        document.getElementById('sidenav-main').style.width = '255px';
+        document.getElementById('main-content').style.marginLeft = '250px';
+        this.mini = true; 
+      }
+    }
   </script>
 
   <!-- Github buttons -->
   <!-- <script async defer src="https://buttons.github.io/buttons.js"></script> -->
 
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="/static/assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
+  <script async src="/static/assets/js/soft-ui-dashboard.js"></script>
 
 </body>
 </html>
