@@ -1,10 +1,7 @@
-import imp
 import camelot
-import pikepdf
 import re
 from pathlib import Path
 from datetime import date, datetime as dt
-from itertools import groupby
 import pandas as pd
 import json
 import sys
@@ -26,7 +23,6 @@ def calcPercentage(l, index, total, updateOriginal, roundUp):
     newL = []
     
     for itr, ele in enumerate(l):
-        print(ele[index], total)     
         val = (ele[index]/total)*100
         newL.append(round(val))
         if updateOriginal:
@@ -165,20 +161,16 @@ def createResponseObj(result):
         "Debit Trx List": sortRevByAmount(result["Debit Trx List"], 2, 10),
         "Credit Trx List": sortRevByAmount(result["Credit Trx List"], 2, 10)
     }    
-    print("Result", resObj)
     return resObj
 
 
 def extractData(fileList, bankName, password=''):
-    for file in fileList:
-        print(fileList, Path.home())
+    for file in fileList:        
         file[1].save(Path.home() / file[0])
         filename = Path.home() / file[0]
         filename = str(filename).replace("\\","/")
         
-        try :
-            with pikepdf.Pdf.open(filename, password=password) as my_pdf:
-                my_pdf.save(filename)
+        try :            
             tables2=camelot.read_pdf(filename, flavor=bankStructure[bankName]["type"], pages='all')
         except BaseException as ex:
             # Get current system exception
@@ -197,7 +189,7 @@ def extractData(fileList, bankName, password=''):
             print("Exception type : %s " % ex_type.__name__)
             print("Exception message : %s" %ex_value)
             print("Stack trace : %s" %stack_trace)
-        print(tables2)
+
         dateMap = {
             "Total_Amount": 0,
             "Total Transaction": 0,
