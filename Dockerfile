@@ -15,5 +15,6 @@ RUN apt-get install -y ghostscript
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 # gunicorn
-# ENTRYPOINT ["./gunicorn.sh"]
-CMD ["gunicorn", "--config", "gunicorn-cfg.py", "run:app"]
+ENTRYPOINT ["python3"]
+# CMD ["gunicorn", "--config", "gunicorn-cfg.py", "run:app"]
+CMD ["run.py"]

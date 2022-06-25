@@ -1,5 +1,5 @@
 import os
-from   sys import exit
+from sys import exit
 
 from apps.config import config_dict
 from apps import create_app
@@ -25,4 +25,5 @@ if DEBUG:
 
 if __name__ == "__main__":
     # app.run(debug=True)
-    app.run()
+    # app.run(host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=os.environ.get("PORT", 85))

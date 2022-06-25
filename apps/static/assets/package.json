@@ -3,21 +3,18 @@
     "version": "1.0.0",
     "description": "Generic Builder",
     "main": "gulpfile.js",
-    "author": "AppSeed",
+    "author": "Yash Oswal",
     "keywords": [
         "css",
         "sass",
         "gulp",
         "web"
     ],
-    "homepage": "https://appseed.us",
+    "homepage": "https://next-myaccountant.herokuapp.com/",
     "repository": {
         "type": "git",
-        "url": "https://github.com/app-generator"
-    },
-    "bugs": {
-        "email": "support@appseed.us"
-    },
+        "url": "https://next-myaccountant.herokuapp.com/"
+    },   
     "license": "MIT License",
     "devDependencies": {
         "browser-sync": "^2.27.4",

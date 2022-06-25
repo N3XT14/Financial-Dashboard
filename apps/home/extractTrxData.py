@@ -1,4 +1,6 @@
+import imp
 import camelot
+import pikepdf
 import re
 from pathlib import Path
 from datetime import date, datetime as dt
@@ -167,13 +169,16 @@ def createResponseObj(result):
     return resObj
 
 
-def extractData(fileList, bankName):
+def extractData(fileList, bankName, password=''):
     for file in fileList:
+        print(fileList, Path.home())
         file[1].save(Path.home() / file[0])
         filename = Path.home() / file[0]
         filename = str(filename).replace("\\","/")
         
         try :
+            with pikepdf.Pdf.open(filename, password=password) as my_pdf:
+                my_pdf.save(filename)
             tables2=camelot.read_pdf(filename, flavor=bankStructure[bankName]["type"], pages='all')
         except BaseException as ex:
             # Get current system exception

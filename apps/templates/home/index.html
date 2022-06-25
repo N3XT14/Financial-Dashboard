@@ -17,7 +17,7 @@
           {% endif %}
         {% endwith %}
       </p>
-      <form action="http://127.0.0.1:85/index.html" method = "POST" 
+      <form action="https://next-myaccountant.herokuapp.com/index.html" method = "POST" 
          enctype = "multipart/form-data">          
           <label for="files" class="btn btn-outline-primary btn-md mb-0 w-100">No files read yet!! Read Now? Click Me</label>              
           <input type="file" name="files[]" id='files' hidden />
@@ -392,7 +392,7 @@
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
   
-  <script>
+  <script>    
     let data = "{{ message | safe }}";    
     if ( data ){      
       const resp = JSON.parse('{{ message[2] | tojson}}')
